@@ -1,0 +1,94 @@
+# AWS Configuration
+aws_region = "us-west-2"
+
+# Wiz Sensor Configuration
+# Get these credentials from Wiz Portal > Settings > Tenant Info
+wiz_sensor_pull_username = ""
+wiz_sensor_pull_password = ""
+
+# SECURITY: IP Whitelisting (HIGHLY RECOMMENDED FOR CLIENT DEPLOYMENTS)
+# Restrict access to the Selenium Grid LoadBalancer to specific IP addresses
+# 
+# To find your public IP address, run:
+#   curl -s https://checkip.amazonaws.com
+#
+# Then uncomment and set your IP address below:
+# allowed_cidr_blocks = ["YOUR.PUBLIC.IP.ADDRESS/32"]
+#
+# Examples:
+#   Single IP:     allowed_cidr_blocks = ["203.0.113.42/32"]
+#   Multiple IPs:  allowed_cidr_blocks = ["203.0.113.42/32", "198.51.100.10/32"]
+#   IP Range:      allowed_cidr_blocks = ["198.51.100.0/24"]
+#
+# Default (if commented out): ["0.0.0.0/0"] - Exposes to entire internet (NOT RECOMMENDED)
+# allowed_cidr_blocks = ["0.0.0.0/0"]
+
+# Optional: Wiz Integration Settings
+# use_wiz_sensor = true
+# use_wiz_admission_controller = false
+# use_wiz_admission_controller_audit_log = false
+
+# Optional: VPC Configuration
+# vpc_cidr = "10.0.0.0/16"
+# vpc_subnets = 2
+
+# Optional: EKS Configuration
+# cluster_version = "1.32"
+# cluster_admins = []  # List of IAM user/role ARNs
+
+# EKS Control Plane Access (SECURITY SETTING)
+# cluster_endpoint_public_access = false   # Default: false (private, more secure)
+# cluster_endpoint_private_access = true   # Default: true (accessible from VPC)
+#
+# IMPORTANT: If cluster_endpoint_public_access = false, you'll need VPC access to:
+#   - Run kubectl commands
+#   - Run terraform apply (for kubernetes/helm resources)
+#   - Manage the cluster
+# Options for VPC access: Bastion host, VPN, AWS Systems Manager Session Manager
+#
+################################################################################
+# DEPLOYMENT STRATEGY
+################################################################################
+# The EKS cluster is PRIVATE by default for security.
+# This requires a TWO-STAGE deployment:
+#
+# STAGE 1 (run from your laptop):
+#   deployment_stage = "stage1"
+#   - Creates VPC, S3, IAM roles, Security Groups
+#   - Creates Bastion host for Stage 2 deployment
+#
+# STAGE 2 (run from bastion host):
+#   deployment_stage = "stage2"
+#   - Creates EKS cluster and Kubernetes resources
+#   - Deploys Selenium Grid and Wiz integration
+#
+# For testing/demos only, you can use:
+#   deployment_stage = "all"
+#   cluster_endpoint_public_access = true
+#   - Deploys everything in one go (requires public EKS endpoint)
+################################################################################
+
+# STAGE 1 Configuration (run from your laptop)
+deployment_stage = "stage1"
+create_bastion_host = true
+
+# STAGE 2 Configuration (uncomment and use on bastion host)
+# deployment_stage = "stage2"
+# create_bastion_host = false
+
+# EKS Cluster Access (keep private for production)
+cluster_endpoint_public_access = false
+cluster_endpoint_private_access = true
+
+# Optional: VPC Flow Logs
+# enable_flow_log = false
+# flow_log_destination_type = "s3"
+# flow_log_destination_arn = "arn:aws:s3:::your-flow-logs-bucket"
+
+# Optional: Resource Tags
+# tags = {
+#   owner   = "Security Team"
+#   project = "Attack Simulation"
+#   environment = "demo"
+# }
+

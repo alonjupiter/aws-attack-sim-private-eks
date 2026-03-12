@@ -1,0 +1,77 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# AWS
+.aws/
+*.pem
+*.key
+
+# Logs
+*.log
+
+# Sensitive data
+credentials.json
+secrets.json
+*.secret
+client_keys.txt
+
+# Project specific archives
+terraform-files.tar.gz
+
+# macOS
+.DS_Store
+
+# End of .gitignore
+

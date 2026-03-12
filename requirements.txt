@@ -1,0 +1,4 @@
+-i https://pypi.org/simple
+boto3==1.38.10; python_version >= '3.9'
+python3-nmap==1.9.1; python_version >= '3.6'
+selenium==4.32.0; python_version >= '3.9'
