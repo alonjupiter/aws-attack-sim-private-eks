@@ -269,3 +269,80 @@ terraform destroy
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | The ID of the VPC created for the simulation. |
 | <a name="output_vpc_private_subnets"></a> [vpc\_private\_subnets](#output\_vpc\_private\_subnets) | The IDs of the private subnets in the VPC created for the simulation. |
 <!-- END_TF_DOCS -->
+
+---
+
+# Appendix: Architecture Diagram
+
+This diagram illustrates the project's infrastructure and the simulated attack flow.
+
+```mermaid
+graph TD
+    subgraph "Local Environment"
+        User(["Attacker / Security Researcher"])
+    end
+
+    subgraph "AWS Cloud (Target Account)"
+        subgraph "VPC (10.0.0.0/16)"
+            subgraph "Public Subnets"
+                NLB["Selenium Grid NLB<br/>(Port: 24444)"]
+                NAT_GW["NAT Gateway"]
+            end
+
+            subgraph "Private Subnets"
+                Bastion["Bastion Host (EC2)<br/>(SSM Managed)"]
+                
+                subgraph "EKS Cluster (Private)"
+                    subgraph "Managed Node Group"
+                        Node["EKS Worker Node"]
+                        
+                        subgraph "Selenium Pod"
+                            Selenium["Selenium Grid Container<br/>(Vulnerable Apps)"]
+                            Sidecar["Cred Proxy Sidecar<br/>(Python Script)"]
+                        end
+                        
+                        subgraph "Wiz Pods"
+                            WizInteg["Wiz Integration<br/>(Sensor & Connector)"]
+                        end
+                    end
+                end
+            end
+            
+            subgraph "Intra Subnets"
+                EKS_CP["EKS Control Plane"]
+            end
+        end
+
+        subgraph "Global AWS Services"
+            S3["S3 Bucket<br/>(Sensitive Data)"]
+            SSM["SSM Parameter Store<br/>(Config & Stolen Creds)"]
+            IAM["IAM Roles<br/>(vulnerable-node-role)"]
+        end
+    end
+
+    subgraph "External Services"
+        WizCore["Wiz Cloud Console"]
+    end
+
+    %% Workflow / Communication
+    User -- "1. Initial Access" --> NLB
+    NLB --> Selenium
+    Selenium -- "2. RCE / Metadata Access" --> Node
+    Node -- "3. Steal IAM Creds" --> IAM
+    Sidecar -- "4. Store Stealed Creds" --> SSM
+    User -- "5. Data Exfiltration" --> S3
+    
+    WizInteg -- "6. Report Events" --> WizCore
+    Bastion -- "Manage" --> EKS_CP
+    Bastion -- "Deploy" --> Selenium
+    
+    %% Styling
+    classDef highlight fill:#f96,stroke:#333,stroke-width:2px;
+    classDef storage fill:#eee,stroke:#333,stroke-dasharray: 5 5;
+    classDef compute fill:#d1e5ff,stroke:#007bff,stroke-width:1px;
+    
+    class Selenium,Sidecar,IAM highlight;
+    class S3,SSM storage;
+    class Bastion,Node,EKS_CP compute;
+```
+
