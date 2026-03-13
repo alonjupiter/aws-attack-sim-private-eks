@@ -6,10 +6,10 @@ This project provides infrastructure and tooling to simulate a controlled attack
 
 The simulation demonstrates the following attack flow:
 
-- Initial access via a Selenium Grid Server misconfigured and exposed to public internet
-- Remote Code Execution allowing the attacker to retrieve EC2 Instance metadata
-- Usage of EC2 Instance Role to enumerate AWS IAM, RDS API and do S3 ls
-- Exfiltration of sensitive data from an S3 bucket
+- Initial access via a Selenium Grid Server misconfigured and exposed to public internet **(Detected by Wiz Sensor)**
+- Remote Code Execution allowing the attacker to retrieve EC2 Instance metadata **(Detected by Wiz Sensor)**
+- Usage of EC2 Instance Role to enumerate AWS IAM, RDS API and do S3 ls **(Detected by AWS CloudTrail)**
+- Exfiltration of sensitive data from an S3 bucket **(Detected by S3 Data Events)**
 
 # Prerequisites
 
